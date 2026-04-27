@@ -1,0 +1,102 @@
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - transcendence
+    restart: always
+    depends_on:
+      - frontend
+      - backend
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  frontend:
+    container_name: frontend
+    build: 
+      context: ./requirements/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./requirements/frontend:/app
+      - /app/node_modules
+    networks:
+      - transcendence
+    restart: always
+    env_file:
+      - .env
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  backend:
+    container_name: backend
+    build: 
+      context: ./requirements/backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./requirements/backend:/app
+      - /app/node_modules
+    networks:
+      - transcendence
+    restart: always
+    env_file:
+      - .env
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  postgresql:
+    container_name: postgresql
+    build: 
+      context: ./requirements/postgresql
+      dockerfile: Dockerfile
+    ports: 
+      - "5432:5432"
+    volumes: 
+      - postgresql_data:/var/lib/postgresql/data
+    networks:
+      - transcendence
+    restart: always
+    env_file:
+      - .env
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+#volumes:
+#  postgresql_data:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      o: bind
+#      device: /home/${USER}/data/postgresql
+# Si Makefile
+
+volumes:
+  postgresql_data:
+
+
+networks:
+  transcendence:
+    driver: bridge
+    name: transcendence

@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { label: "Play", href: "/" },
   { label: "Leaderboard", href: "/leaderboard" },
   { label: "Profile", href: "/profile" },
-  { label: "Signin", href: "/signin" },
+  { label: "Sign in", href: "/signin" },
 ];
 
 function App() {
